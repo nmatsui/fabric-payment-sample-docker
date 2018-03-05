@@ -7,15 +7,16 @@ PEER_MSPCONFIGPATH="/etc/hyperledger/crypto-config/peerOrganizations/org1.exampl
 CHAINCODE_SRC="github.com/nmatsui/fabric-payment-sample-chaincode"
 CHAINCODE_VERSION="0.1"
 
-CLI="cli"
-
 docker-compose -f docker-compose.yaml down
 docker network rm fabric-sample-nw
 
 docker network create --driver=bridge --attachable=true fabric-sample-nw
 docker-compose -f docker-compose.yaml up -d
 
-sleep 10
+sleep 20
+
+CLI="cli"
+API="api"
 
 # Create the channel
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" ${CLI} peer channel create -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f /etc/hyperledger/artifacts/channel.tx
@@ -31,8 +32,15 @@ docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=
 ## Install chaincode to peer0
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" -e "CORE_PEER_ADDRESS=${PEER_ADDRESS}" ${CLI} peer chaincode install -n ${CHAINCODE_NAME} -p ${CHAINCODE_SRC} -v ${CHAINCODE_VERSION}
 
+sleep 10
 
 # Instantiate chaincode
 PEER_ADDRESS="peer0:7051"
 
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" -e "CORE_PEER_ADDRESS=${PEER_ADDRESS}" ${CLI} peer chaincode instantiate -o ${ORDERER_ADDRESS} -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} -c '{"Args":[""]}' -P "OR ('Org1MSP.member')"
+
+sleep 10
+
+# Generate CA admin & user
+docker exec ${API} node ./scripts/enrollAdmin.js ${CA_PASSWORD}
+docker exec ${API} node ./scripts/registerUser.js ${USER_NAME}

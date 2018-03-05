@@ -8,3 +8,4 @@ docker rm -f $(docker ps -aq)
 docker rmi $(docker images dev-* -q)
 
 docker network rm fabric-sample-nw
+docker volume prune -f

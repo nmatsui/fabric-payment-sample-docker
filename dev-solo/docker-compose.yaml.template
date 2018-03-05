@@ -4,7 +4,6 @@ networks:
   fabric-sample-nw:
     external: true
 
-
 services:
   ca:
     container_name: ca
@@ -106,7 +105,6 @@ services:
     working_dir: /etc/hyperledger/artifacts
     command: /bin/bash
     volumes:
-      - /var/run/:/host/var/run/
       - ./artifacts/:/etc/hyperledger/artifacts
       - ./crypto-config/:/etc/hyperledger/crypto-config/
       - ${GOPATH}/src/github.com/nmatsui/fabric-payment-sample-chaincode/:/opt/gopath/src/github.com/nmatsui/fabric-payment-sample-chaincode/
@@ -119,6 +117,7 @@ services:
 
   api:
     container_name: api
+    hostname: api
     image: fabric-payment/api
     environment:
       - CA_ADDRESS=ca:7054
