@@ -1,0 +1,49 @@
+# Copyright IBM Corp. All Rights Reserved.
+# modified Nobuyuki Matsui <nobuyuki.matsui@gmail.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+Profiles:
+    OneOrgOneOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            FabricPaymentSampleConsortium:
+                Organizations:
+                    - *Org1
+    OneOrgOneOrdererChannel:
+        Consortium: FabricPaymentSampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
+    - &Org1
+        Name: Org1MSP
+        ID: Org1MSP
+        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
+        AnchorPeers:
+            - Host: peer0.org1.example.com
+              Port: 7051
+
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+        - orderer:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+
+Application: &ApplicationDefaults
+    Organizations:

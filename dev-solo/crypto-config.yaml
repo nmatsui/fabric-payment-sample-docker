@@ -1,0 +1,19 @@
+# Copyright IBM Corp. All Rights Reserved.
+# modified Nobuyuki Matsui <nobuyuki.matsui@gmail.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+OrdererOrgs:
+  - Name: Orderer
+    Domain: example.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: Org1
+    Domain: org1.example.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
