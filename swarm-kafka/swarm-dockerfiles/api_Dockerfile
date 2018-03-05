@@ -1,0 +1,5 @@
+FROM fabric-payment/api
+
+RUN mkdir -p /etc/hyperledger
+COPY api/ /etc/hyperledger/api/
+COPY scripts/ /etc/hyperledger/scripts/

@@ -1,0 +1,412 @@
+version: '3'
+
+networks:
+  fabric-sample-nw:
+    external: true
+
+volumes:
+  shared:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=<<NFS_HOST>>,rw
+      device: ":<<NFS_PATH>>"
+
+services:
+  ca:
+    hostname: ca
+    image: localhost:5000/fabric-payment-swarm/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/ca/<<CA_KEYFILE_PLACEHOLDER>>
+    working_dir: /etc/hyperledger
+    command: sh -c 'fabric-ca-server start -b admin:<<CA_ADMIN_PASSWORD>> -d'
+    ports:
+      - 7054
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  orderer0:
+    hostname: orderer0
+    image: localhost:5000/fabric-payment-swarm/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/msp
+    working_dir: /etc/hyperledger
+    command: orderer
+    ports:
+      - 7050
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  orderer1:
+    hostname: orderer1
+    image: localhost:5000/fabric-payment-swarm/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp
+    working_dir: /etc/hyperledger
+    command: orderer
+    ports:
+      - 7050
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  peer0:
+    hostname: peer0
+    image: localhost:5000/fabric-payment-swarm/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.org1.example.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/
+      - CORE_PEER_ADDRESS=peer0:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-sample-nw
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    working_dir: /etc/hyperledger
+    command: peer node start
+    ports:
+      - 7051
+      - 7053
+    volumes:
+      - /var/run/:/host/var/run/
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  peer1:
+    hostname: peer1
+    image: localhost:5000/fabric-payment-swarm/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.org1.example.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/
+      - CORE_PEER_ADDRESS=peer1:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-sample-nw
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    working_dir: /etc/hyperledger
+    command: peer node start
+    ports:
+      - 7051
+      - 7053
+    volumes:
+      - /var/run/:/host/var/run/
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  peer2:
+    hostname: peer2
+    image: localhost:5000/fabric-payment-swarm/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer2.org1.example.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/
+      - CORE_PEER_ADDRESS=peer2:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-sample-nw
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    working_dir: /etc/hyperledger
+    command: peer node start
+    ports:
+      - 7051
+      - 7053
+    volumes:
+      - /var/run/:/host/var/run/
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  peer3:
+    hostname: peer3
+    image: localhost:5000/fabric-payment-swarm/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer3.org1.example.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp/
+      - CORE_PEER_ADDRESS=peer3:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-sample-nw
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    working_dir: /etc/hyperledger
+    command: peer node start
+    ports:
+      - 7051
+      - 7053
+    volumes:
+      - /var/run/:/host/var/run/
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  couchdb0:
+    hostname: couchdb0
+    image: localhost:5000/hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984
+    # volumes:
+    #   - ./couchdb0_data:/opt/couchdb/data # persistent couchdb database using host volume
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  couchdb1:
+    hostname: couchdb1
+    image: localhost:5000/hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984
+    # volumes:
+    #   - ./couchdb1_data:/opt/couchdb/data # persistent couchdb database using host volume
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  couchdb2:
+    hostname: couchdb2
+    image: localhost:5000/hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984
+    # volumes:
+    #   - ./couchdb2_data:/opt/couchdb/data # persistent couchdb database using host volume
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  couchdb3:
+    hostname: couchdb3
+    image: localhost:5000/hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984
+    # volumes:
+    #   - ./couchdb3_data:/opt/couchdb/data # persistent couchdb database using host volume
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  cli:
+    hostname: cli
+    image: localhost:5000/fabric-payment-swarm/fabric-tools
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /etc/hyperledger/artifacts
+    command: /bin/bash
+    networks:
+      - fabric-sample-nw
+    deploy:
+      mode: global
+
+  api0:
+    hostname: api0
+    image: localhost:5000/fabric-payment-swarm/api
+    environment:
+      - CA_ADDRESS=ca:7054
+      - CA_NAME=ca
+      - ORDERER_ADDRESS=orderer0:7050
+      - PEER_ADDRESS=peer0:7051
+      - EVENTHUB_ADDRESS=peer0:7053
+      - KEYSTORE_PATH=/etc/hyperledger/key_store
+      - NODE_PATH=/etc/hyperledger
+      - MSPID=Org1MSP
+      - CHANNEL_NAME=<<CHANNEL_NAME>>
+      - CHAINCODE_NAME=${CHAINCODE_NAME}
+      - ADMIN_NAME=admin
+      - USER_NAME=<<USER_NAME>>
+    working_dir: /etc/hyperledger
+    command: npm start
+    ports:
+      - 3000:3000
+    volumes:
+      - shared:/etc/hyperledger/key_store
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  api1:
+    hostname: api1
+    image: localhost:5000/fabric-payment-swarm/api
+    environment:
+      - CA_ADDRESS=ca:7054
+      - CA_NAME=ca
+      - ORDERER_ADDRESS=orderer1:7050
+      - PEER_ADDRESS=peer1:7051
+      - EVENTHUB_ADDRESS=peer1:7053
+      - KEYSTORE_PATH=/etc/hyperledger/key_store
+      - NODE_PATH=/etc/hyperledger
+      - MSPID=Org1MSP
+      - CHANNEL_NAME=<<CHANNEL_NAME>>
+      - CHAINCODE_NAME=${CHAINCODE_NAME}
+      - ADMIN_NAME=admin
+      - USER_NAME=<<USER_NAME>>
+    working_dir: /etc/hyperledger
+    command: npm start
+    ports:
+      - 3001:3000
+    volumes:
+      - shared:/etc/hyperledger/key_store
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  api2:
+    hostname: api2
+    image: localhost:5000/fabric-payment-swarm/api
+    environment:
+      - CA_ADDRESS=ca:7054
+      - CA_NAME=ca
+      - ORDERER_ADDRESS=orderer0:7050
+      - PEER_ADDRESS=peer2:7051
+      - EVENTHUB_ADDRESS=peer2:7053
+      - KEYSTORE_PATH=/etc/hyperledger/key_store
+      - NODE_PATH=/etc/hyperledger
+      - MSPID=Org1MSP
+      - CHANNEL_NAME=<<CHANNEL_NAME>>
+      - CHAINCODE_NAME=${CHAINCODE_NAME}
+      - ADMIN_NAME=admin
+      - USER_NAME=<<USER_NAME>>
+    working_dir: /etc/hyperledger
+    command: npm start
+    ports:
+      - 3002:3000
+    volumes:
+      - shared:/etc/hyperledger/key_store
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  api3:
+    hostname: api3
+    image: localhost:5000/fabric-payment-swarm/api
+    environment:
+      - CA_ADDRESS=ca:7054
+      - CA_NAME=ca
+      - ORDERER_ADDRESS=orderer1:7050
+      - PEER_ADDRESS=peer3:7051
+      - EVENTHUB_ADDRESS=peer3:7053
+      - KEYSTORE_PATH=/etc/hyperledger/key_store
+      - NODE_PATH=/etc/hyperledger
+      - MSPID=Org1MSP
+      - CHANNEL_NAME=<<CHANNEL_NAME>>
+      - CHAINCODE_NAME=${CHAINCODE_NAME}
+      - ADMIN_NAME=admin
+      - USER_NAME=<<USER_NAME>>
+    working_dir: /etc/hyperledger
+    command: npm start
+    ports:
+      - 3003:3000
+    volumes:
+      - shared:/etc/hyperledger/key_store
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1

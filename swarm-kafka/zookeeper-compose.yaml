@@ -1,0 +1,60 @@
+version: '3'
+
+networks:
+  fabric-sample-nw:
+    external: true
+
+services:
+  zookeeper0:
+    hostname: zookeeper0
+    image: localhost:5000/hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - 2181
+      - 2888
+      - 3888
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  zookeeper1:
+    hostname: zookeeper1
+    image: localhost:5000/hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_MY_ID=2
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - 2181
+      - 2888
+      - 3888
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  zookeeper2:
+    hostname: zookeeper2
+    image: localhost:5000/hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_MY_ID=3
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - 2181
+      - 2888
+      - 3888
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0

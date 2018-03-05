@@ -1,0 +1,5 @@
+FROM hyperledger/fabric-peer
+
+RUN mkdir -p /etc/hyperledger
+COPY artifacts/ /etc/hyperledger/artifacts/
+COPY crypto-config/ /etc/hyperledger/crypto-config/

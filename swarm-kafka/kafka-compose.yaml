@@ -1,0 +1,94 @@
+version: '3'
+
+networks:
+  fabric-sample-nw:
+    external: true
+
+services:
+  kafka0:
+    hostname: kafka0
+    image: localhost:5000/hyperledger/fabric-kafka
+    environment:
+      - KAFKA_BROKER_ID=0
+      - KAFKA_LOG_RETENTION_MS=-1
+      - KAFKA_MESSAGE_MAX_BYTES=103809024
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+    ports:
+      - 9092
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  kafka1:
+    hostname: kafka1
+    image: localhost:5000/hyperledger/fabric-kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LOG_RETENTION_MS=-1
+      - KAFKA_MESSAGE_MAX_BYTES=103809024
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+    ports:
+      - 9092
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1
+
+  kafka2:
+    hostname: kafka2
+    image: localhost:5000/hyperledger/fabric-kafka
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_LOG_RETENTION_MS=-1
+      - KAFKA_MESSAGE_MAX_BYTES=103809024
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+    ports:
+      - 9092
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node0
+
+  kafka3:
+    hostname: kafka3
+    image: localhost:5000/hyperledger/fabric-kafka
+    environment:
+      - KAFKA_BROKER_ID=3
+      - KAFKA_LOG_RETENTION_MS=-1
+      - KAFKA_MESSAGE_MAX_BYTES=103809024
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+    ports:
+      - 9092
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node1

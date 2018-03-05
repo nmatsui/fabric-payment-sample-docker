@@ -1,0 +1,7 @@
+FROM hyperledger/fabric-tools
+
+RUN mkdir -p /etc/hyperledger
+RUN mkdir -p /opt/gopath/src/github.com/nmatsui
+COPY fabric-payment-sample-chaincode /opt/gopath/src/github.com/nmatsui/fabric-payment-sample-chaincode/
+COPY artifacts/ /etc/hyperledger/artifacts/
+COPY crypto-config/ /etc/hyperledger/crypto-config/

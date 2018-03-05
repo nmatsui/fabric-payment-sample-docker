@@ -1,0 +1,4 @@
+FROM hyperledger/fabric-ca
+
+RUN mkdir -p /etc/hyperledger
+COPY crypto-config/ /etc/hyperledger/crypto-config/
