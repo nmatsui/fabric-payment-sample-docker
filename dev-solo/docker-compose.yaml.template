@@ -116,3 +116,33 @@ services:
       - orderer
       - peer0
       - couchdb
+
+  api:
+    container_name: api
+    image: fabric-payment/api
+    environment:
+      - CA_ADDRESS=ca:7054
+      - CA_NAME=ca
+      - ORDERER_ADDRESS=orderer:7050
+      - PEER_ADDRESS=peer0:7051
+      - EVENTHUB_ADDRESS=peer0:7053
+      - KEYSTORE_PATH=/etc/hyperledger/key_store
+      - NODE_PATH=/etc/hyperledger
+      - MSPID=Org1MSP
+      - CHANNEL_NAME=<<CHANNEL_NAME>>
+      - CHAINCODE_NAME=${CHAINCODE_NAME}
+      - ADMIN_NAME=admin
+      - USER_NAME=<<USER_NAME>>
+    working_dir: /etc/hyperledger
+    command: npm start
+    ports:
+      - 3000:3000
+    volumes:
+      - ${API_PATH}/api:/etc/hyperledger/api
+      - ${API_PATH}/scripts:/etc/hyperledger/scripts
+    networks:
+      - fabric-sample-nw
+    depends_on:
+      - ca
+      - orderer
+      - peer0
