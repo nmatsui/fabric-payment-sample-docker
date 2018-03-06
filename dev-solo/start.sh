@@ -26,8 +26,11 @@ sleep 10
 # peer0
 PEER_ADDRESS="peer0:7051"
 
-## Join peer0 to the channel.
+## Join peer0 to the channel
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" -e "CORE_PEER_ADDRESS=${PEER_ADDRESS}" ${CLI} peer channel join -b /etc/hyperledger/artifacts/${CHANNEL_NAME}.block
+
+## Update anchor of peer0
+docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" -e "CORE_PEER_ADDRESS=${PEER_ADDRESS}" ${CLI} peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f /etc/hyperledger/artifacts/Org1MSPanchors.tx
 
 ## Install chaincode to peer0
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" -e "CORE_PEER_ADDRESS=${PEER_ADDRESS}" ${CLI} peer chaincode install -n ${CHAINCODE_NAME} -p ${CHAINCODE_SRC} -v ${CHAINCODE_VERSION}
@@ -42,5 +45,5 @@ docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=
 sleep 10
 
 # Generate CA admin & user
-docker exec ${API} node ./scripts/enrollAdmin.js ${CA_PASSWORD}
+docker exec ${API} node ./scripts/enrollAdmin.js ${CA_ADMIN_PASSWORD}
 docker exec ${API} node ./scripts/registerUser.js ${USER_NAME}
