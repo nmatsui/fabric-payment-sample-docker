@@ -5,7 +5,7 @@
 #
 
 Profiles:
-    OneOrgTwoOrderersGenesis:
+    OneOrgFourOrderersGenesis:
         Orderer:
             <<: *OrdererDefaults
             Organizations:
@@ -14,7 +14,7 @@ Profiles:
             FabricPaymentSampleConsortium:
                 Organizations:
                     - *Org1
-    OneOrgTwoOrderersChannel:
+    OneOrgFourOrderersChannel:
         Consortium: FabricPaymentSampleConsortium
         Application:
             <<: *ApplicationDefaults
@@ -45,6 +45,8 @@ Orderer: &OrdererDefaults
     Addresses:
         - orderer0:7050
         - orderer1:7050
+        - orderer2:7050
+        - orderer3:7050
     BatchTimeout: 2s
     BatchSize:
         MaxMessageCount: 10

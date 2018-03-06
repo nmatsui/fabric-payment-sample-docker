@@ -10,6 +10,8 @@ OrdererOrgs:
     Specs:
       - Hostname: orderer0
       - Hostname: orderer1
+      - Hostname: orderer2
+      - Hostname: orderer3
 
 PeerOrgs:
   - Name: Org1

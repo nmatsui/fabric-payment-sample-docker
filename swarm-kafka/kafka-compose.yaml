@@ -69,7 +69,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node0
+          - node.labels.type == node2
 
   kafka3:
     hostname: kafka3
@@ -91,4 +91,4 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node1
+          - node.labels.type == node3

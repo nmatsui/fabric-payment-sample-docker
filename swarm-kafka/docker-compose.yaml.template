@@ -77,6 +77,50 @@ services:
         constraints:
           - node.labels.type == node1
 
+  orderer2:
+    hostname: orderer2
+    image: localhost:5000/fabric-payment-swarm/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp
+    working_dir: /etc/hyperledger
+    command: orderer
+    ports:
+      - 7050
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node2
+
+  orderer3:
+    hostname: orderer3
+    image: localhost:5000/fabric-payment-swarm/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp
+    working_dir: /etc/hyperledger
+    command: orderer
+    ports:
+      - 7050
+    networks:
+      - fabric-sample-nw
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.type == node3
+
   peer0:
     hostname: peer0
     image: localhost:5000/fabric-payment-swarm/fabric-peer
@@ -168,7 +212,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node0
+          - node.labels.type == node2
 
   peer3:
     hostname: peer3
@@ -199,7 +243,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node1
+          - node.labels.type == node3
 
   couchdb0:
     hostname: couchdb0
@@ -253,7 +297,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node0
+          - node.labels.type == node2
 
   couchdb3:
     hostname: couchdb3
@@ -271,7 +315,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node1
+          - node.labels.type == node3
 
   cli:
     hostname: cli
@@ -357,7 +401,7 @@ services:
     environment:
       - CA_ADDRESS=ca:7054
       - CA_NAME=ca
-      - ORDERER_ADDRESS=orderer0:7050
+      - ORDERER_ADDRESS=orderer2:7050
       - PEER_ADDRESS=peer2:7051
       - EVENTHUB_ADDRESS=peer2:7053
       - KEYSTORE_PATH=/etc/hyperledger/key_store
@@ -379,7 +423,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node0
+          - node.labels.type == node2
 
   api3:
     hostname: api3
@@ -387,7 +431,7 @@ services:
     environment:
       - CA_ADDRESS=ca:7054
       - CA_NAME=ca
-      - ORDERER_ADDRESS=orderer1:7050
+      - ORDERER_ADDRESS=orderer3:7050
       - PEER_ADDRESS=peer3:7051
       - EVENTHUB_ADDRESS=peer3:7053
       - KEYSTORE_PATH=/etc/hyperledger/key_store
@@ -409,4 +453,4 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.type == node1
+          - node.labels.type == node3
