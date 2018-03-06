@@ -1,4 +1,5 @@
 bin/
 artifacts/
 crypto-config/
+config/
 docker-compose.yaml
