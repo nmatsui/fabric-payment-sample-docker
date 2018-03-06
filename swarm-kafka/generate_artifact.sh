@@ -7,8 +7,6 @@ if [ $# -ne 3 ]; then
   exit 1
 fi
 
-COMMAND_PATH="${PWD}/../dev-solo/bin"
-
 # remove previous crypto material and config transactions
 rm -fr ./artifacts
 rm -fr ./crypto-config
@@ -21,28 +19,28 @@ sudo rm /mnt/*
 sudo umount /mnt
 
 # generate crypto material
-${COMMAND_PATH}/cryptogen generate --config=./crypto-config.yaml
+./bin/cryptogen generate --config=./crypto-config.yaml
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate crypto material..."
   exit 1
 fi
 
 # generate genesis block for orderer
-${COMMAND_PATH}/configtxgen -profile OneOrgTwoOrderersGenesis -outputBlock ./artifacts/genesis.block
+./bin/configtxgen -profile OneOrgTwoOrderersGenesis -outputBlock ./artifacts/genesis.block
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate orderer genesis block..."
   exit 1
 fi
 
 # generate channel configuration transaction
-${COMMAND_PATH}/configtxgen -profile OneOrgTwoOrderersChannel -outputCreateChannelTx ./artifacts/channel.tx -channelID ${CHANNEL_NAME}
+./bin/configtxgen -profile OneOrgTwoOrderersChannel -outputCreateChannelTx ./artifacts/channel.tx -channelID ${CHANNEL_NAME}
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
 fi
 
 # generate anchor peer transaction
-${COMMAND_PATH}/configtxgen -profile OneOrgTwoOrderersChannel -outputAnchorPeersUpdate ./artifacts/Org1MSPanchors.tx -channelID ${CHANNEL_NAME} -asOrg Org1MSP
+./bin/configtxgen -profile OneOrgTwoOrderersChannel -outputAnchorPeersUpdate ./artifacts/Org1MSPanchors.tx -channelID ${CHANNEL_NAME} -asOrg Org1MSP
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate anchor peer update for Org1MSP..."
   exit 1

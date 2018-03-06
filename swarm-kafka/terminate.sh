@@ -10,6 +10,8 @@ docker stack rm ${STACK_NAME}
 docker stack rm kafka
 docker stack rm zookeeper
 
+sleep 30
+
 docker rm -f $(docker ps -aq)
 docker rmi $(docker images dev-* -q)
 
