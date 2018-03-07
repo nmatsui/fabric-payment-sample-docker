@@ -31,7 +31,7 @@ Organizations:
         ID: Org1MSP
         MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
         AnchorPeers:
-            - Host: peer0
+            - Host: peer
               Port: 7051
 
 Orderer: &OrdererDefaults
