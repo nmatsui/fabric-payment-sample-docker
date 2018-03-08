@@ -67,7 +67,7 @@ services:
       - 7051
       - 7053
     volumes:
-      - /var/run/:/host/var/run/
+      - /var/run/docker.sock:/host/var/run/docker.sock
       - ./artifacts/:/etc/hyperledger/artifacts
       - ./crypto-config/:/etc/hyperledger/crypto-config/
     networks:
@@ -97,7 +97,6 @@ services:
     tty: true
     environment:
       - GOPATH=/opt/gopath
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_ID=cli
       - CORE_PEER_LOCALMSPID=Org1MSP
