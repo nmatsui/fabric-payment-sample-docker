@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-ORDERER_ADDRESS="orderer1:7050"
+ORDERER_ADDRESS="orderer0:7050"
 LOCALMSPID="Org1MSP"
 PEER_MSPCONFIGPATH="/etc/hyperledger/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp"
 CHAINCODE_SRC="github.com/nmatsui/fabric-payment-sample-chaincode"
@@ -21,8 +21,12 @@ setup_peer () {
 # Create the channel
 docker exec -e "CORE_PEER_LOCALMSPID=${LOCALMSPID}" -e "CORE_PEER_MSPCONFIGPATH=${PEER_MSPCONFIGPATH}" ${CLI} peer channel create -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f /etc/hyperledger/artifacts/channel.tx
 
-sleep 10
+sleep 5
 
+# backup channel genesis to shared nfs volume
+docker exec ${CLI} cp /etc/hyperledger/artifacts/${CHANNEL_NAME}.block /etc/hyperledger/genesis_store/
+
+sleep 10
 
 # Setup peer
 setup_peer "peer0:7051"

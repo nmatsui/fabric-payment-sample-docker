@@ -18,6 +18,10 @@ docker rmi $(docker images dev-* -q)
 docker network rm fabric-sample-nw
 docker volume prune -f
 
-sudo mount -t nfs ${1}:${2} /mnt
+sudo mount -t nfs ${1}:${2}/key_store /mnt
+sudo rm /mnt/*
+sudo umount /mnt
+
+sudo mount -t nfs ${1}:${2}/genesis_store /mnt
 sudo rm /mnt/*
 sudo umount /mnt

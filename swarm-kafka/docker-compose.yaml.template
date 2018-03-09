@@ -5,12 +5,19 @@ networks:
     external: true
 
 volumes:
-  shared:
+  shared-key-store:
     driver: local
     driver_opts:
       type: nfs
       o: addr=<<NFS_HOST>>,rw
-      device: ":<<NFS_PATH>>"
+      device: ":<<NFS_PATH>>/key_store"
+
+  shared-genesis-store:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=<<NFS_HOST>>,rw
+      device: ":<<NFS_PATH>>/genesis_store"
 
 services:
   ca:
@@ -329,6 +336,8 @@ services:
       - CORE_CHAINCODE_KEEPALIVE=10
     working_dir: /etc/hyperledger/artifacts
     command: /bin/bash
+    volumes:
+      - shared-genesis-store:/etc/hyperledger/genesis_store
     networks:
       - fabric-sample-nw
     deploy:
@@ -355,7 +364,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - shared:/etc/hyperledger/key_store
+      - shared-key-store:/etc/hyperledger/key_store
     networks:
       - fabric-sample-nw
     deploy:
@@ -385,7 +394,7 @@ services:
     ports:
       - 3001:3000
     volumes:
-      - shared:/etc/hyperledger/key_store
+      - shared-key-store:/etc/hyperledger/key_store
     networks:
       - fabric-sample-nw
     deploy:
@@ -415,7 +424,7 @@ services:
     ports:
       - 3002:3000
     volumes:
-      - shared:/etc/hyperledger/key_store
+      - shared-key-store:/etc/hyperledger/key_store
     networks:
       - fabric-sample-nw
     deploy:
@@ -445,7 +454,7 @@ services:
     ports:
       - 3003:3000
     volumes:
-      - shared:/etc/hyperledger/key_store
+      - shared-key-store:/etc/hyperledger/key_store
     networks:
       - fabric-sample-nw
     deploy:
